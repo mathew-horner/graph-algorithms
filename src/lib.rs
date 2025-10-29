@@ -188,14 +188,44 @@ pub fn dfs<const V: usize, T>(
     Ok(None)
 }
 
+/// Detect cycles in a graph using a simple algorithm based on recursive DFS.
+pub fn dfs_cycle_detection<const V: usize, T>(
+    graph: &Graph<V, T>,
+    v: Vertex,
+    subtree: &mut HashSet<Vertex>,
+) -> Result<bool, Error> {
+    if !graph.directed {
+        return Err(Error::OnlyDirected);
+    }
+    if subtree.contains(&v) {
+        println!("root: {v} {subtree:?}");
+        return Ok(true);
+    }
+    subtree.insert(v);
+    for u in 0..V {
+        if graph.has_edge(v, u)? {
+            if dfs_cycle_detection(graph, u, subtree)? {
+                println!("loop: {u} {subtree:?}");
+                return Ok(true);
+            }
+        }
+    }
+    subtree.remove(&v);
+    Ok(false)
+}
+
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("the given vertex does not exist")]
     NoVertex,
+    #[error("this algorithm only works on directed graphs")]
+    OnlyDirected,
 }
 
 #[cfg(test)]
 mod tests {
+    use std::convert::identity;
+
     use super::*;
 
     #[test]
@@ -252,5 +282,25 @@ mod tests {
             dfs(&graph, 0, &|value| *value == 102, &mut HashSet::new()).unwrap(),
             Some(2)
         );
+    }
+
+    #[test]
+    fn test_dfs_cycle_detection() {
+        let mut cyclic: Graph<5, _> = Graph::directed(std::array::from_fn(identity));
+        cyclic.connect(0, 1).unwrap();
+        cyclic.connect(0, 2).unwrap();
+        cyclic.connect(1, 2).unwrap();
+        cyclic.connect(2, 0).unwrap();
+
+        assert!(dfs_cycle_detection(&cyclic, 0, &mut HashSet::new()).unwrap());
+
+        let mut acyclic: Graph<5, _> = Graph::directed(std::array::from_fn(identity));
+        acyclic.connect(0, 1).unwrap();
+        acyclic.connect(0, 2).unwrap();
+        acyclic.connect(1, 2).unwrap();
+        acyclic.connect(1, 3).unwrap();
+        acyclic.connect(2, 3).unwrap();
+
+        assert!(!dfs_cycle_detection(&acyclic, 0, &mut HashSet::new()).unwrap());
     }
 }
