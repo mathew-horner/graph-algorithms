@@ -69,30 +69,16 @@ mod tests {
         graph.connect(2, 0).unwrap();
 
         // Search for a value that is not in the graph.
-        assert!(
-            search(&graph, 0, &|value| *value == 1, &mut HashSet::new())
-                .unwrap()
-                .is_none()
-        );
+        assert!(search(&graph, 0, &|value| *value == 1, &mut HashSet::new()).unwrap().is_none());
 
         // Search for a value that is not in vertex 0's sub-graph.
-        assert!(
-            search(&graph, 0, &|value| *value == 103, &mut HashSet::new())
-                .unwrap()
-                .is_none()
-        );
+        assert!(search(&graph, 0, &|value| *value == 103, &mut HashSet::new()).unwrap().is_none());
 
         // Search for vertex 0's value.
-        assert_eq!(
-            search(&graph, 0, &|value| *value == 100, &mut HashSet::new()).unwrap(),
-            Some(0)
-        );
+        assert_eq!(search(&graph, 0, &|value| *value == 100, &mut HashSet::new()).unwrap(), Some(0));
 
         // Search for a value that *is* in vertex 0's sub-graph.
-        assert_eq!(
-            search(&graph, 0, &|value| *value == 102, &mut HashSet::new()).unwrap(),
-            Some(2)
-        );
+        assert_eq!(search(&graph, 0, &|value| *value == 102, &mut HashSet::new()).unwrap(), Some(2));
     }
 
     #[test]

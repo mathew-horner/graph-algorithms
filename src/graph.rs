@@ -1,8 +1,7 @@
 mod adjacency_matrix;
 
-use crate::Error;
-
 use self::adjacency_matrix::{AdjacencyMatrix, Weight};
+use crate::Error;
 
 /// Type used to represent a vertex.
 pub type Vertex = usize;
@@ -27,20 +26,12 @@ pub struct Graph<const V: usize, T> {
 impl<const V: usize, T> Graph<V, T> {
     /// Create a new undirected [`Graph`].
     pub fn undirected(values: [T; V]) -> Self {
-        Self {
-            values,
-            directed: false,
-            matrix: Default::default(),
-        }
+        Self { values, directed: false, matrix: Default::default() }
     }
 
     /// Create a new directed [`Graph`].
     pub fn directed(values: [T; V]) -> Self {
-        Self {
-            values,
-            directed: true,
-            matrix: Default::default(),
-        }
+        Self { values, directed: true, matrix: Default::default() }
     }
 
     /// Set the value of the vertex `v`.
