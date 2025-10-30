@@ -198,14 +198,12 @@ pub fn dfs_cycle_detection<const V: usize, T>(
         return Err(Error::OnlyDirected);
     }
     if subtree.contains(&v) {
-        println!("root: {v} {subtree:?}");
         return Ok(true);
     }
     subtree.insert(v);
     for u in 0..V {
         if graph.has_edge(v, u)? {
             if dfs_cycle_detection(graph, u, subtree)? {
-                println!("loop: {u} {subtree:?}");
                 return Ok(true);
             }
         }
